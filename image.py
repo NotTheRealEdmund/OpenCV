@@ -4,7 +4,7 @@ def goToImage():
     print('Enter image path')
     imgPath = input()
     while True:
-        print('What kind of image processing would like to do?')
+        print('What kind of image processing would you like to do?')
         print('Current image path: ' + imgPath)
         print('1. View the image in color')
         print('2. View the image in grayscale')
