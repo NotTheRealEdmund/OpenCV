@@ -7,7 +7,8 @@ def goToVideo():
         print('1. Capture live stream video with camera')
         print('2. Play a video from file')
         print('3. Optical flow')
-        print('4. Exit')
+        print('4. Dense Optical flow')
+        print('5. Exit')
         x = input()
         if x == '1':
             cap = cv2.VideoCapture(0)
@@ -33,7 +34,7 @@ def goToVideo():
                 ret, frame = cap.read()
                 cv2.imshow('frame', frame)
                 # Slow the video down by limiting the display frame rate
-                if cv2.waitKey(50) & 0xFF == ord('\x1B'):
+                if cv2.waitKey(30) & 0xFF == ord('\x1B'):
                     break
             cap.release()
             cv2.destroyAllWindows()
@@ -82,7 +83,7 @@ def goToVideo():
                 img = cv2.add(frame, mask)
                 # Show the frame
                 cv2.imshow('frame', img)
-                if cv2.waitKey(50) & 0xFF == ord('\x1B'):
+                if cv2.waitKey(30) & 0xFF == ord('\x1B'):
                     break
                 # Now update the previous frame and previous points, the new frame/points will become old frame/points 
                 # and the next loop, the captured frame/points will be the new frame/points
@@ -90,5 +91,39 @@ def goToVideo():
                 p0 = good_new.reshape(-1, 1, 2)
             cv2.destroyAllWindows()
             cap.release()
+        elif x == '4':
+            # Dense optical flow basically computes the optical flow for all the points in the frame instead of just corner points.
+            print('Enter the video path')
+            vidPath = input()
+            cap = cv2.VideoCapture(vidPath)
+
+            # First frame
+            ret, frame = cap.read()
+            old_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            hsv = np.zeros_like(frame)
+            hsv[...,1] = 255
+
+            print('Press ESC key to stop the video')
+            # Repeatedly compare between old frame and new frame for the entire video
+            while(1):
+                ret, frame = cap.read()
+                frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+                flow = cv2.calcOpticalFlowFarneback(old_gray, frame_gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+
+                mag, ang = cv2.cartToPolar(flow[...,0], flow[...,1])
+                hsv[...,0] = ang*180/np.pi/2
+                hsv[...,2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+                img = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
+
+                # Show the frame
+                cv2.imshow('frame', img)
+                if cv2.waitKey(30) & 0xFF == ord('\x1B'):
+                    break
+                # Now update the previous frame and previous points, the new frame/points will become old frame/points 
+                # and the next loop, the captured frame/points will be the new frame/points
+                old_gray = frame_gray
+            cap.release()
+            cv2.destroyAllWindows()
         else:
             break
