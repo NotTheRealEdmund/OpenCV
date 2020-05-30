@@ -57,6 +57,17 @@ def goToImage():
             plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
             # Show the plot
             plt.show()
+            # Provide option to save image
+            print('Would you like to save this image to a path? (y/n)')
+            y = input()
+            if y == 'y':
+                print('Enter path to save image to')
+                z = input()
+                plt.subplot(121), plt.imshow(img, cmap='gray')
+                plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+                plt.subplot(122),plt.imshow(edges, cmap='gray')
+                plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+                plt.savefig(z)
         elif x == '5':
             # Shi-Tomasi Corner Detector is a slightly better version of Harris Corner Detector 
             # because the scoring function used is slightly more accurate.
