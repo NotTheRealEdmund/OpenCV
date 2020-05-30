@@ -66,6 +66,13 @@ def goToImage():
             cv2.imshow('image', img)  
             # Press any key to close image
             if cv2.waitKey(0):  
-                cv2.destroyAllWindows() 
+                cv2.destroyAllWindows()
+            # Provide option to save image
+            print('Would you like to save this image to a path? (y/n)')
+            y = input()
+            if y == 'y':
+                print('Enter path to save image to')
+                z = input()
+                cv2.imwrite(z, img)
         else:
             break
