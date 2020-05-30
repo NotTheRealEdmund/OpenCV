@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
 
 def goToImage():
     print('Enter image path')
@@ -10,8 +11,9 @@ def goToImage():
         print('1. View the image in color')
         print('2. View the image in grayscale')
         print('3. Change the image path')
-        print('4. Shi-Tomasi Corner Detector')
-        print('5. Exit')
+        print('4. Canny Edge Detection')
+        print('5. Shi-Tomasi Corner Detector')
+        print('6. Exit')
         x = input()
         if x == '1':
             img = cv2.imread(imgPath, 1)
@@ -39,6 +41,23 @@ def goToImage():
             print('Enter new image path')
             imgPath = input()
         elif x == '4':
+            img = cv2.imread(imgPath, 0)
+            # The most important function to carry out Canny Edge Detection
+            # The arguments 100 and 200 are thresholds, minVal and maxVal
+            # Any edges with intensity gradient more than maxVal are sure to be edges 
+            # and those below minVal are sure to be non-edges, so discarded
+            # Those who lie between these two thresholds are classified edges or non-edges based on their connectivity
+            # If they are connected to “sure-edge” pixels, they are considered to be part of edges
+            # Otherwise, they are also discarded
+            edges = cv2.Canny(img, 100, 200)
+            # Prepare the edge image to show contrast between edges and background
+            plt.subplot(121), plt.imshow(img, cmap='gray')
+            plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+            plt.subplot(122),plt.imshow(edges, cmap='gray')
+            plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
+            # Show the plot
+            plt.show()
+        elif x == '5':
             # Shi-Tomasi Corner Detector is a slightly better version of Harris Corner Detector 
             # because the scoring function used is slightly more accurate.
             # The Shi-Tomasi Corner Detector gives points which are less cluttered and 
