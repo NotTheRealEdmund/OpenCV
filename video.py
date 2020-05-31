@@ -7,8 +7,9 @@ def goToVideo():
         print('1. Capture live stream video with camera')
         print('2. Play a video from file')
         print('3. Optical flow')
-        print('4. Dense Optical flow')
-        print('5. Exit')
+        print('4. Dense optical flow')
+        print('5. Background subtraction')
+        print('6. Exit')
         x = input()
         if x == '1':
             cap = cv2.VideoCapture(0)
@@ -123,6 +124,41 @@ def goToVideo():
                 # Now update the previous frame and previous points, the new frame/points will become old frame/points 
                 # and the next loop, the captured frame/points will be the new frame/points
                 old_gray = frame_gray
+            cap.release()
+            cv2.destroyAllWindows()
+        elif x == '5':
+            # Background subtraction is a major preprocessing step in many vision based applications
+            # Technically, we are extracting the moving foreground from static background
+            print('Enter the video path')
+            vidPath = input()
+            cap = cv2.VideoCapture(vidPath)
+            print('Press ESC key to stop the video')
+            
+            # Before the loop, we need to use cv2.createBackgroundSubtractorMOG2()
+            # to create a background object using the function
+            background = cv2.createBackgroundSubtractorMOG2()
+
+            while(1):
+                ret, frame = cap.read()
+
+                # This kernel allows morphological opening to use the first few (120 by default) frames for background modelling.
+                # It employs probabilistic foreground segmentation algorithm that identifies 
+                # possible foreground objects using Bayesian inference. 
+                # The estimates are adaptive; newer observations are more heavily weighted 
+                # than old observations to accommodate variable illumination. 
+                # Several morphological filtering operations like closing and opening are done to remove unwanted noise. 
+                kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+
+                # Use backgroundsubtractor.apply() method to get the foreground mask.
+                mask = background.apply(frame)
+
+                # Apply morphological opening to the resulting mask to remove the noises
+                mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+                # Show the frame
+                cv2.imshow('frame', mask)
+                if cv2.waitKey(30) & 0xFF == ord('\x1B'):
+                    break
             cap.release()
             cv2.destroyAllWindows()
         else:
